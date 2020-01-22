@@ -11,10 +11,12 @@
   </ul>
   </article>
     <article class="column">
-      <button>New</button>
+    <h1>New</h1>
       <section class="row">
         <button>Food</button>
         <button>Game</button>
+      </section>
+      <section class="row">
         <button>Event</button>
         <button>Cash</button>
       </section>
