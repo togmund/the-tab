@@ -1,14 +1,5 @@
 # Schema Outline
 
-Group <-- Members --> Users || Receipts --> Transactions
-^----------------------|
-
-A Group can have many users
-A user can be in many groups by way of membership
-
-A user can have many transcations
-A transaction can have many users
-
 ## Groups
 
 - ID
@@ -29,15 +20,17 @@ A transaction can have many users
 
 - ID
 - Tag
-- Total Bill
+- Total
 
-## Lines
+## Entries
 
 - ID
+- Receipt_ID
 - Member_ID
-- Amount Paid
+- Amount_Paid
+- Share
 
-Total Bill / Count of Transactions - Amount Paid = Change in Debt/Credit
+IF Share(Total Bill / Count of Transactions - Amount Paid) = Change in Debt/Credit
 
 Total Debt/Credit = Sum of all changes
 
