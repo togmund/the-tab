@@ -19,18 +19,36 @@ alias TheTab.People.User
 alias TheTab.Transactions.Entry
 alias TheTab.Transactions.Receipt
 
-Repo.insert!(%Group{
-  name: "Something"
-})
+# Groups for Seeds
+group_names = ["Golden Geese", "McTavish"]
 
-Repo.insert!(%User{
-  name: "Something"
-})
+# People for Seeds
+person_names = ["Noah", "Ted", "Mike", "Gregg", "Mallory", "Kailey", "Tanyss", "Jon", "Tristan"]
 
-Repo.insert!(%Member{
-  group_id: 1,
-  user_id: 1
-})
+# Possible Tags
+tags = ["Food", "Event", "Game"]
+
+group_names
+|> Enum.each(fn name ->
+  Repo.insert!(%Group{
+    name: name
+  })
+end)
+
+person_names
+|> Enum.each(fn name ->
+  Repo.insert!(%User{
+    name: name
+  })
+end)
+
+1..length(person_names)
+|> Enum.each(fn index ->
+  Repo.insert!(%Member{
+    user_id: index,
+    group_id: Enum.random(1..length(group_names))
+  })
+end)
 
 Repo.insert!(%Receipt{
   tag: "food",
