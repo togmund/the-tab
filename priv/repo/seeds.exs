@@ -50,14 +50,20 @@ end)
   })
 end)
 
-Repo.insert!(%Receipt{
-  tag: "food",
-  total: 1
-})
+1..500
+|> Enum.each(fn _index ->
+  Repo.insert!(%Receipt{
+    tag: Enum.random(tags),
+    total: Enum.random(800..2500)
+  })
+end)
 
-Repo.insert!(%Entry{
-  receipt_id: 1,
-  member_id: 1,
-  amount_paid: 1,
-  share: true
-})
+TheTab.Transactions.list_receipts()
+|> Enum.each(fn receipt ->
+  Repo.insert!(%Entry{
+    receipt_id: receipt["id"],
+    member_id: 1,
+    amount_paid: receipt["total"],
+    share: true
+  })
+end)
