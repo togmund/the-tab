@@ -310,8 +310,14 @@ defmodule TheTab.People do
 
   """
   def list_members_and_debts!(group_id) do
-    from(g in Group,
-      where: g.id == ^group_id
+    from(m in Member,
+      join: e in Entry,
+      on: m.id == e.member_id,
+      join: r in Receipt,
+      on: e.receipt_id == r.id,
+      join: u in User,
+      on: m.user_id == u.id,
+      where: m.group_id == ^group_id
     )
     |> Repo.all()
   end
