@@ -20,7 +20,7 @@ alias TheTab.Transactions.Entry
 alias TheTab.Transactions.Receipt
 
 # Groups for Seeds
-group_names = ["Golden Geese", "McTavish"]
+group_names = ["Golden Geese", "McTavish", "Bradford", "Woodwards", "Stronglot"]
 
 # People for Seeds
 person_names = ["Noah", "Ted", "Mike", "Gregg", "Mallory", "Kailey", "Tanyss", "Jon", "Tristan"]
@@ -50,7 +50,7 @@ end)
   })
 end)
 
-1..500
+1..800
 |> Enum.each(fn _index ->
   Repo.insert!(%Receipt{
     tag: Enum.random(tags),
@@ -60,10 +60,15 @@ end)
 
 TheTab.Transactions.list_receipts()
 |> Enum.each(fn receipt ->
-  Repo.insert!(%Entry{
-    receipt_id: receipt["id"],
-    member_id: 1,
-    amount_paid: receipt["total"],
+  %Entry{
+    receipt_id: receipt.id,
+    member_id:
+      1..length(group_names)
+      |> Enum.random()
+      |> TheTab.People.list_member_ids!()
+      |> Enum.random(),
+    amount_paid: receipt.total,
     share: true
-  })
+  }
+  |> Repo.insert!()
 end)

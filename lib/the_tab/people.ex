@@ -296,6 +296,28 @@ defmodule TheTab.People do
   end
 
   @doc """
+  Returns the list of members in one group by the group_id.
+
+  Raises `Ecto.NoResultsError` if the Group does not exist.
+
+  ## Examples
+
+      iex> list_member_ids!(123)
+      [4, 6, 13, ...]
+
+      iex> list_member_ids!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def list_member_ids!(group_id) do
+    from(m in Member,
+      where: m.group_id == ^group_id,
+      select: m.id
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Returns the list of members in one group and their associated debts
 
   Raises `Ecto.NoResultsError` if the Group does not exist.
