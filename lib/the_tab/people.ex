@@ -293,4 +293,22 @@ defmodule TheTab.People do
   def change_member(%Member{} = member) do
     Member.changeset(member, %{})
   end
+
+  @doc """
+  Returns the list of members in one group and their associated debts
+
+  Raises `Ecto.NoResultsError` if the Group does not exist.
+
+  ## Examples
+
+      iex> list_members_and_debts!(123)
+      [{:ok, Member, Debt}, ...]
+
+      iex> list_members_and_debts!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def list_members_and_debts!(group_id) do
+    from()
+  end
 end
