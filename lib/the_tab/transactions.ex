@@ -6,6 +6,7 @@ defmodule TheTab.Transactions do
   import Ecto.Query, warn: false
   alias TheTab.Repo
 
+  alias TheTab.Transactions.Entry
   alias TheTab.Transactions.Receipt
 
   @doc """
@@ -101,8 +102,6 @@ defmodule TheTab.Transactions do
   def change_receipt(%Receipt{} = receipt) do
     Receipt.changeset(receipt, %{})
   end
-
-  alias TheTab.Transactions.Entry
 
   @doc """
   Returns the list of entries.

@@ -6,7 +6,12 @@ defmodule TheTab.People do
   import Ecto.Query, warn: false
   alias TheTab.Repo
 
+  alias TheTab.People.Group
+  alias TheTab.People.Member
   alias TheTab.People.User
+
+  alias TheTab.Transactions.Entry
+  alias TheTab.Transactions.Receipt
 
   @doc """
   Returns the list of users.
@@ -102,8 +107,6 @@ defmodule TheTab.People do
     User.changeset(user, %{})
   end
 
-  alias TheTab.People.Group
-
   @doc """
   Returns the list of groups.
 
@@ -197,8 +200,6 @@ defmodule TheTab.People do
   def change_group(%Group{} = group) do
     Group.changeset(group, %{})
   end
-
-  alias TheTab.People.Member
 
   @doc """
   Returns the list of members.
@@ -302,13 +303,16 @@ defmodule TheTab.People do
   ## Examples
 
       iex> list_members_and_debts!(123)
-      [{:ok, Member, Debt}, ...]
+      [{:ok, %Member{}, 40_000}, ...]
 
       iex> list_members_and_debts!(456)
       ** (Ecto.NoResultsError)
 
   """
   def list_members_and_debts!(group_id) do
-    from()
+    from(g in Group,
+      where: g.id == ^group_id
+    )
+    |> Repo.all()
   end
 end
