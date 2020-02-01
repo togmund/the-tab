@@ -332,14 +332,31 @@ defmodule TheTab.People do
 
   """
   def list_members_and_debts!(group_id) do
-    from(m in Member,
-      join: e in Entry,
-      on: m.id == e.member_id,
-      join: r in Receipt,
-      on: e.receipt_id == r.id,
-      join: u in User,
-      on: m.user_id == u.id,
-      where: m.group_id == ^group_id
+    query =
+      from(m in Member,
+        join: e in Entry,
+        on: m.id == e.member_id,
+        join: r in Receipt,
+        on: e.receipt_id == r.id,
+        join: u in User,
+        on: m.user_id == u.id,
+        where: m.group_id == ^group_id and is_nil(e.amount_paid),
+        select: %{
+          member_name: u.name,
+          owes:
+            fragment(
+              "ROUND(?)",
+              (r.total / count(r.id))
+              |> Decimal.round()
+              |> Decimal.to_integer()
+            )
+        },
+        group_by: [r.id, r.total, u.name]
+      )
+
+    from(d in subquery(query),
+      select: %{d.member_name, sum(d.owes)},
+      group_by: d.member_name
     )
     |> Repo.all()
   end
