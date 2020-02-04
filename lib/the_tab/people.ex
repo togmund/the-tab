@@ -324,15 +324,15 @@ defmodule TheTab.People do
 
   ## Examples
 
-      iex> list_members_and_debts!(123)
+      iex> TheTab.People.list_members_and_debts!(1)
       [{:ok, %Member{}, 40_000}, ...]
 
-      iex> list_members_and_debts!(456)
+      iex> TheTab.People.list_members_and_debts!(30)
       ** (Ecto.NoResultsError)
 
   """
   def list_members_and_debts!(group_id) do
-    query =
+    debt_query =
       from(m in Member,
         join: e in Entry,
         on: m.id == e.member_id,
@@ -340,22 +340,39 @@ defmodule TheTab.People do
         on: e.receipt_id == r.id,
         join: u in User,
         on: m.user_id == u.id,
-        where: m.group_id == ^group_id and is_nil(e.amount_paid),
+        where: m.group_id == ^group_id,
         select: %{
+          member_id: m.id,
           member_name: u.name,
           owes:
             fragment(
               "ROUND(?)",
-              (r.total / count(r.id))
-              |> Decimal.round()
-              |> Decimal.to_integer()
+              r.total / count(r.id)
             )
         },
-        group_by: [r.id, r.total, u.name]
+        group_by: [m.id, u.name, r.total, r.id]
       )
 
-    from(d in subquery(query),
-      select: %{d.member_name, sum(d.owes)},
+    credit_query =
+      from(m in Member,
+        join: e in Entry,
+        on: m.id == e.member_id,
+        join: r in Receipt,
+        on: e.receipt_id == r.id,
+        join: u in User,
+        on: m.user_id == u.id,
+        where: m.group_id == ^group_id and not is_nil(e.amount_paid),
+        select: %{
+          member_id: m.id,
+          member_name: u.name,
+          owed: e.amount_paid
+        }
+      )
+
+    from(d in subquery(debt_query),
+      join: c in subquery(credit_query),
+      on: c.member_id == d.member_id,
+      select: {d.member_name, sum(d.owes) - sum(c.owed)},
       group_by: d.member_name
     )
     |> Repo.all()
